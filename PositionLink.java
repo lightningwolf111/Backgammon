@@ -31,6 +31,15 @@ public class PositionLink {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PositionLink that = (PositionLink) o;
-        return node.equals(that.node);
+        return node.equals(that.node) && ((move1 == that.move1 && move2 == that.move2) || (move2 == that.move1 && move1 == that.move2));
+    }
+
+    @Override
+    public String toString() {
+        return "PositionLink{" +
+                "node=" + node +
+                ", move1=" + move1 +
+                ", move2=" + move2 +
+                '}';
     }
 }

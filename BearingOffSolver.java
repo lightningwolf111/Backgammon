@@ -16,7 +16,7 @@ public class BearingOffSolver {
 
         //generateNextNodes(nodes.get(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}).hashCode()));
         nodes.put(root.hashCode(), root);
-        generateAllPositions(root);
+        generateAllPositions(nodes.get(root.hashCode()));
         System.out.println(nodes.size() + " nodes generated. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
         for (Integer i : nodes.keySet()) {
             for (int move1 = 6; move1 > 0; move1--) {
@@ -25,18 +25,41 @@ public class BearingOffSolver {
                 }
             }
         }
-        System.out.println("Tree links populated. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
-        //System.out.println("Equal?: " + nodes.get(root.hashCode()).equals(new PositionNode(new int[]{15, 0, 0, 0, 0, 0, 0})) + " " + new PositionLink(nodes.get(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}).hashCode())).equals(new PositionLink(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}))));
+
         for (Integer i : nodes.keySet()) {
             removeDuplicates(nodes.get(i).previousPositions);
             removeDuplicates(nodes.get(i).nextPositions);
         }
+
+        System.out.println("Tree links populated. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
+//        System.out.println(nodes.get(root.hashCode()).previousPositions);
+//        System.out.println(nodes.get(root.hashCode()).previousPositions.size());
+//        System.out.println(nodes.get(root.hashCode()).nextPositions);
+        //System.out.println(nodes.get(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}).hashCode()).nextPositions);
+        //System.out.println(nodes.get(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}).hashCode()).nextPositions.size());
+        System.out.println("Next for 14-1-0... " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).nextPositions);
+        //System.out.println("Equal?: " + nodes.get(root.hashCode()).equals(new PositionNode(new int[]{15, 0, 0, 0, 0, 0, 0})) + " " + new PositionLink(nodes.get(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}).hashCode())).equals(new PositionLink(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}))));
+
         System.out.println("Starting on probability computations. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
         nodes.get(root.hashCode()).setProbability(0, 1);
         nodes.get(root.hashCode()).probabilitiesInitialized = true;
-        updateProbabilityDistributions(root);
-        System.out.println("Distributions Updated: " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).printProbabilityDistribution() + " " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).probabilitiesInitialized);
+        nodes.get(root.hashCode()).nextPositions = new ArrayList<>();
+        System.out.println(nodes.get(root.hashCode()).probabilityDistribution[0]);
 
+
+
+        //updateProbabilityDistributions(root);
+
+        for (Integer i : nodes.keySet()) {
+            updateProbabilityDistributionsNonRecursive(nodes.get(i));
+        }
+
+
+
+        System.out.println("Distributions Updated: " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).printProbabilityDistribution() + " " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).probabilitiesInitialized + " . Time taken: " + (System.currentTimeMillis() - startTime)/1000);
+
+        System.out.println(nodes.get(new PositionNode(new int[]{14, 0, 0, 0, 0, 0, 1}).hashCode()).printProbabilityDistribution());
+        System.out.println(nodes.get(root.hashCode()).printProbabilityDistribution());
 //        generateNextNodes(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}));
 //        Random random = new Random();
 //
@@ -192,20 +215,21 @@ public class BearingOffSolver {
 
         nextPositions = removeDuplicates(nextPositions);
         //System.out.println(position + " NextPOS: " + nextPositions);
-        ArrayList<PositionNode> toAdd = new ArrayList<>();
-        ArrayList<PositionLink> toRemove = new ArrayList<>();
-        for (PositionLink node : nextPositions) {
-            if (nodes.containsKey(node.hashCode())) {
-                toAdd.add(nodes.get(node.hashCode()));
-                toRemove.add(node);
-            } else {
-                nodes.put(node.hashCode(), node.getNode());
-            }
-        }
-        for (PositionNode node : toAdd) {
-            nextPositions.add(new PositionLink(node));
-        }
-        nextPositions.removeAll(toRemove);
+
+//        ArrayList<PositionNode> toAdd = new ArrayList<>();
+//        ArrayList<PositionLink> toRemove = new ArrayList<>();
+//        for (PositionLink node : nextPositions) {
+//            if (nodes.containsKey(node.hashCode())) {
+//                toAdd.add(nodes.get(node.hashCode()));
+//                toRemove.add(node);
+//            } else {
+//                nodes.put(node.hashCode(), node.getNode());
+//            }
+//        }
+//        for (PositionNode node : toAdd) {
+//            nextPositions.add(new PositionLink(node));
+//        }
+//        nextPositions.removeAll(toRemove);
 
 //        for (PositionLink l : nextPositions) {
 //            if (l.hashCode() == root.hashCode()) {
@@ -217,11 +241,11 @@ public class BearingOffSolver {
             link.setMoves(move1, move2);
             PositionNode l = nodes.get(link.hashCode());
             l.previousPositions.add(new PositionLink(position, move1, move2));
-            nodes.put(l.hashCode(), l);
+            //nodes.put(l.hashCode(), l);
         }
         //System.out.println(position + " NextPOS1: " + nextPositions);
-        position.nextPositions = nextPositions;
-        nodes.put(position.hashCode(), position);
+        position.nextPositions.addAll(nextPositions);
+        //nodes.put(position.hashCode(), position);
         //System.out.println(nextPositions.size());
         return nextPositions;
     }
@@ -236,7 +260,7 @@ public class BearingOffSolver {
                 nextPos[i - move]++;
                 //System.out.println("Move " + move);
                 //System.out.println("I: " + i + " " + position.toString() + " Position: " + nextPos[0] + " " + nextPos[1] + " " + nextPos[2] + " " + nextPos[3] + " " + nextPos[4] + " " + nextPos[5] + " " + nextPos[6]);
-                nextPositions.add(new PositionLink(nextPos));
+                nextPositions.add(new PositionLink(nodes.get(new PositionNode(nextPos).hashCode())));
             }
         }
         if (nextPositions.isEmpty()) {
@@ -247,9 +271,12 @@ public class BearingOffSolver {
                     nextPos[0]++;
                     //System.out.println("Move " + move);
                     //System.out.println("I: " + i + " " + position.toString() + " Position: " + nextPos[0] + " " + nextPos[1] + " " + nextPos[2] + " " + nextPos[3] + " " + nextPos[4] + " " + nextPos[5] + " " + nextPos[6]);
-                    nextPositions.add(new PositionLink(nextPos));
+                    nextPositions.add(new PositionLink(nodes.get(new PositionNode(nextPos).hashCode())));
                 }
             }
+        }
+        if (nextPositions.isEmpty()) {
+            nextPositions.add(new PositionLink(nodes.get(root.hashCode())));
         }
         return nextPositions;
     }
@@ -264,7 +291,7 @@ public class BearingOffSolver {
                 nextPos[i - move]++;
                 //System.out.println("Move " + move);
                 //System.out.println("I: " + i + " " + position.toString() + " Position: " + nextPos[0] + " " + nextPos[1] + " " + nextPos[2] + " " + nextPos[3] + " " + nextPos[4] + " " + nextPos[5] + " " + nextPos[6]);
-                nextPositions.add(new PositionLink(nextPos));
+                nextPositions.add(new PositionLink(nodes.get(new PositionNode(nextPos).hashCode())));
             }
         }
         if (nextPositions.isEmpty()) {
@@ -275,9 +302,12 @@ public class BearingOffSolver {
                     nextPos[0]++;
                     //System.out.println("Move " + move);
                     //System.out.println("I: " + i + " " + position.toString() + " Position: " + nextPos[0] + " " + nextPos[1] + " " + nextPos[2] + " " + nextPos[3] + " " + nextPos[4] + " " + nextPos[5] + " " + nextPos[6]);
-                    nextPositions.add(new PositionLink(nextPos));
+                    nextPositions.add(new PositionLink(nodes.get(new PositionNode(nextPos).hashCode())));
                 }
             }
+        }
+        if (nextPositions.isEmpty()) {
+            nextPositions.add(new PositionLink(nodes.get(root.hashCode())));
         }
         return nextPositions;
     }
@@ -300,7 +330,11 @@ public class BearingOffSolver {
     }
 
     public static void updateProbabilityDistributions(PositionNode node) {
-        System.out.println("Updating Dists for: " + node);
+        //System.out.println("Updating Dists for: " + node);
+
+        if (node.searchCompleted) {
+            return;
+        }
         if (!node.nextPositions.isEmpty()) {
             int totalPossibilities = 0;
             for (PositionLink link : node.nextPositions) {
@@ -312,37 +346,82 @@ public class BearingOffSolver {
             }
             for (PositionLink link : node.nextPositions) {
                 if (!link.node.probabilitiesInitialized) {
-                    updateProbabilityDistributions(link.getNode());
+                    updateProbabilityDistributionsNonRecursive(link.getNode());
                 }
             }
             ArrayList<PositionLink> linksForThrow = new ArrayList<>();
             for (int move1 = 6; move1 > 0; move1--) {
                 for (int move2 = move1; move2 > 0; move2--) {
                     for (PositionLink link : node.nextPositions) {
-                        if (link.move1 == move1 && link.move2 == move2) {
+                        if (link.move1 == move1 && link.move2 == move2 || link.move2 == move1 && link.move1 == move2) {
                             linksForThrow.add(link);
                         }
                     }
                     PositionLink best = findBestLink(linksForThrow);
-                    int chancesToRoll = 1;
+                    int chancesToRoll = 2;
                     if (move1 == move2) {
-                        chancesToRoll = 2;
+                        chancesToRoll = 1;
                     }
                     updateDistribution(node, best, chancesToRoll, totalPossibilities);
                 }
             }
         }
         node.probabilitiesInitialized = true;
+//        System.out.println("Total original: " + node.getTotalDistanceToWin());
+//        System.out.println("Next: ");
         for (PositionLink link : node.previousPositions) {
+            //System.out.print(link.node.getTotalDistanceToWin() + "  ");
             updateProbabilityDistributions(link.getNode());
         }
+//        System.out.println(" ");
+//        System.out.println(" ");
+//        System.out.println(" ");
+//        System.out.println(" ");
+
+        node.searchCompleted = true;
+    }
+
+    public static void updateProbabilityDistributionsNonRecursive(PositionNode node) {
+        //System.out.println("Updating Dists NonRecursive for: " + node);
+        if (!node.nextPositions.isEmpty()) {
+            for (PositionLink link : node.nextPositions) {
+                if (!link.node.probabilitiesInitialized) {
+                    updateProbabilityDistributionsNonRecursive(link.getNode());
+                }
+            }
+            ArrayList<PositionLink> linksForThrow = new ArrayList<>();
+            for (int move1 = 6; move1 > 0; move1--) {
+                for (int move2 = move1; move2 > 0; move2--) {
+                    for (PositionLink link : node.nextPositions) {
+                        if (link.move1 == move1 && link.move2 == move2 || link.move2 == move1 && link.move1 == move2) {
+                            linksForThrow.add(link);
+                        }
+                    }
+                    if (nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).equals(node)) {
+                        System.out.println(linksForThrow);
+                    }
+                    PositionLink best = findBestLink(linksForThrow);
+                    int chancesToRoll = 2;
+                    if (move1 == move2) {
+                        chancesToRoll = 1;
+                    }
+                    updateDistribution(node, best, chancesToRoll, 36);
+                }
+            }
+        }
+        node.probabilitiesInitialized = true;
     }
 
     public static PositionLink findBestLink(ArrayList<PositionLink> links) {
+        //System.out.println(links);
+        for (PositionLink l : links) {
+            if (l.getNode().equals(root)) {
+                return l;
+            }
+        }
         PositionLink bestLink = links.get(0);
         for (PositionLink link : links) {
             boolean bestWins = true;
-            boolean unclear = false;
             double cumulativeProbBest = 0;
             double cumulativeProbLink = 0;
             for (int i = 0; i <= 30; i++) {
@@ -352,8 +431,8 @@ public class BearingOffSolver {
                     bestWins = false;
                 }
                 if (!bestWins && cumulativeProbBest > cumulativeProbLink + EPSILON) {
-                    unclear = true;
-                    System.out.println("UNCLEAR which continuation is best bestween " + bestLink.getNode() + " and " + link.getNode() + ".");
+                    //System.out.println("UNCLEAR which continuation is best between " + bestLink.getNode() + " and " + link.getNode() + ". " + i);
+                    break;
                 }
             }
             if (!bestWins) {
@@ -363,6 +442,12 @@ public class BearingOffSolver {
         return bestLink;
     }
     public static void updateDistribution(PositionNode node, PositionLink nextNode, int chancesToRoll, int totalRollsPossible) {
+        if (nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).equals(node)) {
+            System.out.println(totalRollsPossible + " " + chancesToRoll + " " + nextNode);
+        }
+//        if (totalRollsPossible != 36) {
+//            System.out.println(totalRollsPossible);
+//        }
         for (int i = 1; i <= 30; i++) {
             node.probabilityDistribution[i] += nextNode.getNode().probabilityDistribution[i - 1] * chancesToRoll / totalRollsPossible;
         }

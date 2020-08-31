@@ -7,6 +7,7 @@ public class PositionNode {
     ArrayList<PositionLink> previousPositions;
     double[] probabilityDistribution = new double[31];
     boolean probabilitiesInitialized = false;
+    boolean searchCompleted = false;
 
     PositionNode(int[] position) {
         this.position = position;
