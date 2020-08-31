@@ -1,3 +1,4 @@
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 
@@ -53,9 +54,10 @@ public class PositionNode {
     }
 
     public String printProbabilityDistribution() {
+        DecimalFormat df = new DecimalFormat("#.###");
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i <= 30; i++) {
-            sb.append(probabilityDistribution[i]);
+            sb.append(df.format(probabilityDistribution[i]));
             sb.append("   ");
         }
         return sb.toString();
