@@ -8,14 +8,16 @@ public class BearingOffSolver {
     static int generated = 0;
     final static PositionNode root = new PositionNode(new int[]{15, 0, 0, 0, 0, 0, 0});
     final static double EPSILON = 0.00000000001;
+    static long startTime;
 
     public static void main(String[] args) {
         //PositionNode root = buildTree();
+        startTime = System.currentTimeMillis();
 
         //generateNextNodes(nodes.get(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}).hashCode()));
         nodes.put(root.hashCode(), root);
         generateAllPositions(root);
-        System.out.println(nodes.size() + " nodes generated.");
+        System.out.println(nodes.size() + " nodes generated. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
         for (Integer i : nodes.keySet()) {
             for (int move1 = 6; move1 > 0; move1--) {
                 for (int move2 = move1; move2 > 0; move2--) {
@@ -23,12 +25,13 @@ public class BearingOffSolver {
                 }
             }
         }
-        System.out.println("Tree links populated.");
+        System.out.println("Tree links populated. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
+        //System.out.println("Equal?: " + nodes.get(root.hashCode()).equals(new PositionNode(new int[]{15, 0, 0, 0, 0, 0, 0})) + " " + new PositionLink(nodes.get(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}).hashCode())).equals(new PositionLink(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}))));
         for (Integer i : nodes.keySet()) {
             removeDuplicates(nodes.get(i).previousPositions);
             removeDuplicates(nodes.get(i).nextPositions);
         }
-        System.out.println("Starting on probability computations.");
+        System.out.println("Starting on probability computations. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
         nodes.get(root.hashCode()).setProbability(0, 1);
         nodes.get(root.hashCode()).probabilitiesInitialized = true;
         updateProbabilityDistributions(root);
@@ -301,7 +304,7 @@ public class BearingOffSolver {
         if (!node.nextPositions.isEmpty()) {
             int totalPossibilities = 0;
             for (PositionLink link : node.nextPositions) {
-                if (link.move1 == link.move2) {
+                if (link.move1 != link.move2) {
                     totalPossibilities += 2;
                 } else {
                     totalPossibilities++;

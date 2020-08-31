@@ -31,6 +31,6 @@ public class PositionLink {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         PositionLink that = (PositionLink) o;
-        return node.equals(that);
+        return node.equals(that.node);
     }
 }
