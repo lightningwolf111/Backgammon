@@ -16,6 +16,7 @@ public class BearingOffSolver {
         nodes.put(root.hashCode(), root);
         generateAllPositions(nodes.get(root.hashCode()));
         System.out.println(nodes.size() + " nodes generated. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
+        System.out.println("Populating links in tree graph, may take some time.");
         for (Integer i : nodes.keySet()) {
             for (int move1 = 6; move1 > 0; move1--) {
                 for (int move2 = move1; move2 > 0; move2--) {
@@ -29,10 +30,10 @@ public class BearingOffSolver {
             removeDuplicates(nodes.get(i).nextPositions);
         }
 
-        System.out.println("Tree links populated. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
+        System.out.println("Tree links populated. Time taken: " + (System.currentTimeMillis() - startTime)/1000 + "seconds.");
         //System.out.println("Next for 14-1-0... " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).nextPositions.size());
 
-        System.out.println("Starting on probability computations. Time taken: " + (System.currentTimeMillis() - startTime)/1000);
+        System.out.println("Starting on probability computations. Time taken: " + (System.currentTimeMillis() - startTime)/1000 + "seconds.");
         nodes.get(root.hashCode()).setProbability(0, 1);
         nodes.get(root.hashCode()).probabilitiesInitialized = true;
         nodes.get(root.hashCode()).nextPositions = new ArrayList<>();
@@ -43,12 +44,13 @@ public class BearingOffSolver {
         }
 
 
-        System.out.println("Distributions Updated: " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).printProbabilityDistribution() + " " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).probabilitiesInitialized + " . Time taken: " + (System.currentTimeMillis() - startTime)/1000);
-        System.out.println(nodes.get(new PositionNode(new int[]{14, 0, 0, 0, 0, 0, 1}).hashCode()).printProbabilityDistribution());
-        System.out.println(nodes.get(root.hashCode()).printProbabilityDistribution());
+//        System.out.println("Distributions Updated: " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).printProbabilityDistribution() + " " + nodes.get(new PositionNode(new int[]{14, 1, 0, 0, 0, 0, 0}).hashCode()).probabilitiesInitialized + " . Time taken: " + (System.currentTimeMillis() - startTime)/1000);
+//        System.out.println(nodes.get(new PositionNode(new int[]{14, 0, 0, 0, 0, 0, 1}).hashCode()).printProbabilityDistribution());
+//        System.out.println(nodes.get(root.hashCode()).printProbabilityDistribution());
 
-        System.out.println("Worst Distribution: " + nodes.get(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}).hashCode()).printProbabilityDistribution());
-//        generateNextNodes(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}));
+        System.out.println("Worst Probability Distribution (for position with 15 checkers in '6' location): " + nodes.get(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}).hashCode()).printProbabilityDistribution());
+        System.out.println("The ith entry indicates the probability of bearing off after i moves, with optimal play where clear and random play between positions were optimal play depends on the locations of the opponents' checkers.");
+        //        generateNextNodes(new PositionNode(new int[]{0, 0, 0, 0, 0, 0, 15}));
 //        Random random = new Random();
 //
 //        int move1 = random.nextInt(6) + 1;
